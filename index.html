@@ -5,97 +5,44 @@
 <title>Abhi ❤️ Sri</title>
 
 <style>
-body {
-  margin: 0;
-  background: black;
-  font-family: monospace;
-  overflow: hidden;
-  color: white;
-}
+body { margin:0; background:black; font-family:monospace; overflow:hidden; color:white; }
 
-/* Unlock screen */
 #lock {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background: black;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
+  position:fixed; width:100%; height:100%;
+  display:flex; justify-content:center; align-items:center;
+  flex-direction:column; background:black;
 }
 
-input {
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  margin-top: 10px;
-}
+input { padding:10px; border-radius:10px; border:none; }
+button { padding:10px 20px; margin-top:10px; border-radius:20px; border:none; background:#00ffcc; }
 
-button {
-  padding: 10px 20px;
-  margin-top: 10px;
-  border-radius: 20px;
-  border: none;
-  background: #00ffcc;
-}
+#chat { display:none; padding:10px; height:100vh; overflow-y:auto; }
 
-/* Chat */
-#chat {
-  display: none;
-  padding: 10px;
-  height: 100vh;
-  overflow-y: auto;
-}
+.msg { padding:10px; margin:8px; border-radius:10px; max-width:70%; }
+.me { background:#00ffcc; color:black; margin-left:auto; }
 
-.msg {
-  padding: 10px;
-  margin: 8px;
-  border-radius: 10px;
-  max-width: 70%;
-}
+canvas { position:fixed; top:0; left:0; }
 
-.me {
-  background: #00ffcc;
-  color: black;
-  margin-left: auto;
-}
-
-.her {
-  background: #333;
-}
-
-/* Canvas */
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-}
-
-/* Hearts */
 .heart {
-  position: fixed;
-  color: red;
-  animation: fall 5s linear infinite;
+  position:fixed; color:red;
+  animation:fall 5s linear infinite;
 }
 
 @keyframes fall {
-  0% { top: -10px; }
-  100% { top: 100%; }
+  0% { top:-10px; }
+  100% { top:100%; }
 }
 </style>
 </head>
 
 <body>
 
-<!-- 🔐 Lock Screen -->
 <div id="lock">
   <h2>🔐 Enter Name to Unlock</h2>
-  <input id="nameInput" placeholder="Hint: Your Name 😉">
+  <input id="nameInput" placeholder="Hint 😉">
   <button onclick="unlock()">Unlock ❤️</button>
 </div>
 
-<!-- 💬 Chat UI -->
 <div id="chat"></div>
 
 <audio id="music" loop>
@@ -105,7 +52,7 @@ canvas {
 <canvas id="canvas"></canvas>
 
 <script>
-// 🔐 Unlock logic
+// Unlock
 function unlock() {
   let name = document.getElementById("nameInput").value.toLowerCase();
   if (name === "abhi") {
@@ -115,43 +62,40 @@ function unlock() {
     startChat();
     startHearts();
   } else {
-    alert("❌ Wrong password 😜 Try again");
+    alert("Wrong 😜");
   }
 }
 
-// 💬 Chat animation
+// Chat
 const messages = [
-  {text: "Hey Abhi ❤️", type: "me"},
-  {text: "Guess what today is? 😏", type: "me"},
-  {text: "It's your Birthdayyyy 🎂🔥", type: "me"},
-  {text: "System detected: Cutest girl alive 💖", type: "me"},
-  {text: "You = root access to my heart 💻", type: "me"},
-  {text: "Without you → life = 404 error ❌", type: "me"},
-  {text: "Installing Love vInfinity ♾️", type: "me"},
-  {text: "Happy Birthday Abhi ❤️", type: "me"},
-  {text: "- Sri 💖", type: "me"}
+"Hey Abhi ❤️",
+"Guess what 😏",
+"It's your Birthday 🎂🔥",
+"You = root access 💻",
+"Without you = 404 ❌",
+"Love you ♾️",
+"Happy Birthday ❤️",
+"- Sri 💖"
 ];
 
 let i = 0;
-
 function startChat() {
   let chat = document.getElementById("chat");
-
-  function showMsg() {
+  function show() {
     if (i < messages.length) {
       let div = document.createElement("div");
-      div.className = "msg " + messages[i].type;
-      div.innerText = messages[i].text;
+      div.className = "msg me";
+      div.innerText = messages[i];
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
       i++;
-      setTimeout(showMsg, 1200);
+      setTimeout(show, 1000);
     }
   }
-  showMsg();
+  show();
 }
 
-// 🎆 Fireworks
+// Fireworks
 const canvas = document.getElementById("canvas");
 const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
@@ -159,48 +103,50 @@ canvas.height = window.innerHeight;
 
 let particles = [];
 
-canvas.addEventListener("click", (e) => {
-  for (let i = 0; i < 40; i++) {
+function createFirework(x,y){
+  for(let i=0;i<60;i++){
     particles.push({
-      x: e.clientX,
-      y: e.clientY,
-      dx: (Math.random() - 0.5) * 6,
-      dy: (Math.random() - 0.5) * 6,
-      life: 100
+      x,y,
+      dx:(Math.random()-0.5)*6,
+      dy:(Math.random()-0.5)*6,
+      life:100
     });
   }
+}
+
+setInterval(()=>{
+  createFirework(Math.random()*canvas.width, Math.random()*canvas.height/2);
+},1500);
+
+canvas.addEventListener("click",(e)=>{
+  createFirework(e.clientX,e.clientY);
 });
 
-function draw() {
-  ctx.fillStyle = "rgba(0,0,0,0.2)";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
+function draw(){
+  ctx.fillStyle="rgba(0,0,0,0.2)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  particles.forEach((p, index) => {
-    ctx.fillStyle = `hsl(${Math.random()*360},100%,50%)`;
-    ctx.fillRect(p.x, p.y, 3, 3);
-
-    p.x += p.dx;
-    p.y += p.dy;
-    p.life--;
-
-    if (p.life <= 0) particles.splice(index, 1);
+  particles.forEach((p,i)=>{
+    ctx.fillStyle=`hsl(${Math.random()*360},100%,50%)`;
+    ctx.fillRect(p.x,p.y,3,3);
+    p.x+=p.dx; p.y+=p.dy; p.life--;
+    if(p.life<=0) particles.splice(i,1);
   });
 
   requestAnimationFrame(draw);
 }
 draw();
 
-// ❤️ Heart rain
-function startHearts() {
-  setInterval(() => {
-    let heart = document.createElement("div");
-    heart.className = "heart";
-    heart.style.left = Math.random() * 100 + "%";
-    heart.innerText = "❤️";
-    document.body.appendChild(heart);
-
-    setTimeout(() => heart.remove(), 5000);
-  }, 300);
+// Hearts
+function startHearts(){
+  setInterval(()=>{
+    let h=document.createElement("div");
+    h.className="heart";
+    h.style.left=Math.random()*100+"%";
+    h.innerText="❤️";
+    document.body.appendChild(h);
+    setTimeout(()=>h.remove(),5000);
+  },300);
 }
 </script>
 
