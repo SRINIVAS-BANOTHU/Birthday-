@@ -5,37 +5,97 @@
 <title>Abhi ❤️ Sri</title>
 
 <style>
-body { margin:0; background:black; font-family:monospace; overflow:hidden; color:white; }
+body{
+  margin:0;
+  font-family:monospace;
+  overflow:hidden;
+  color:white;
+  background:linear-gradient(270deg,#000000,#020024,#090979,#000000);
+  background-size:800% 800%;
+  animation:bgMove 10s ease infinite;
+}
 
-#lock {
-  position:fixed; width:100%; height:100%;
+@keyframes bgMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
+}
+
+/* Lock */
+#lock{
+  position:fixed;
+  width:100%; height:100%;
   display:flex; justify-content:center; align-items:center;
-  flex-direction:column; background:black;
+  flex-direction:column;
+  z-index:10;
 }
 
-input { padding:10px; border-radius:10px; border:none; }
-button { padding:10px 20px; margin-top:10px; border-radius:20px; border:none; background:#00ffcc; }
-
-#chat { display:none; padding:10px; height:100vh; overflow-y:auto; }
-
-.msg { padding:10px; margin:8px; border-radius:10px; max-width:70%; }
-.me { background:#00ffcc; color:black; margin-left:auto; }
-
-canvas {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: -1;   /* 🔥 THIS FIXES EVERYTHING */
+input,button{
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  margin-top:10px;
 }
 
-.heart {
-  position:fixed; color:red;
+/* Chat */
+#chat{
+  display:none;
+  padding:10px;
+  height:100vh;
+  overflow-y:auto;
+  z-index:10;
+  position:relative;
+}
+
+.msg{
+  background:#00ffcc;
+  color:black;
+  padding:10px;
+  margin:8px;
+  border-radius:10px;
+  max-width:70%;
+  margin-left:auto;
+  opacity:0;
+  transform:translateY(20px);
+  animation:fadeIn 0.5s forwards;
+}
+
+@keyframes fadeIn{
+  to{opacity:1; transform:translateY(0);}
+}
+
+/* Canvas */
+canvas{
+  position:fixed;
+  top:0; left:0;
+  z-index:-1;
+}
+
+/* Hearts */
+.heart{
+  position:fixed;
+  color:red;
   animation:fall 5s linear infinite;
 }
+@keyframes fall{
+  0%{top:-10px;}100%{top:100%;}
+}
 
-@keyframes fall {
-  0% { top:-10px; }
-  100% { top:100%; }
+/* Final screen */
+#final{
+  display:none;
+  position:fixed;
+  width:100%; height:100%;
+  justify-content:center;
+  align-items:center;
+  font-size:28px;
+  text-align:center;
+  z-index:20;
+  animation:flash 1s infinite alternate;
+}
+
+@keyframes flash{
+  from{opacity:0.6;} to{opacity:1;}
 }
 </style>
 </head>
@@ -43,12 +103,16 @@ canvas {
 <body>
 
 <div id="lock">
-  <h2>🔐 Enter Name to Unlock</h2>
-  <input id="nameInput" placeholder="Hint 😉">
-  <button onclick="unlock()">Unlock ❤️</button>
+  <h2>🔐 Only Abhi Can Unlock ❤️</h2>
+  <input id="nameInput" placeholder="Enter Name 😉">
+  <button onclick="unlock()">Unlock</button>
 </div>
 
 <div id="chat"></div>
+
+<div id="final">
+  🎉 HAPPY BIRTHDAY ABHI 🎂💖🔥
+</div>
 
 <audio id="music" loop>
   <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3">
@@ -58,92 +122,64 @@ canvas {
 
 <script>
 // Unlock
-function unlock() {
-  let name = document.getElementById("nameInput").value.toLowerCase();
-  if (name === "abhi") {
-    document.getElementById("lock").style.display = "none";
-    document.getElementById("chat").style.display = "block";
+function unlock(){
+  let n=document.getElementById("nameInput").value.toLowerCase();
+  if(n==="abhi"){
+    document.getElementById("lock").style.display="none";
+    document.getElementById("chat").style.display="block";
     document.getElementById("music").play();
     startChat();
-    startHearts();
-  } else {
-    alert("Wrong 😜");
-  }
+    hearts();
+    setTimeout(finale,20000);
+  } else alert("Wrong 😜");
 }
 
-// Chat
-const messages = [
+// Chat typing
+const msgs=[
 "Hey Abhi ❤️",
-"Guess what 😏",
-"It's your Birthday 🎂🔥",
-"You = root access 💻",
+"Initializing love system 💻",
+"Loading happiness...",
+"You are my favorite notification 📱",
 "Without you = 404 ❌",
-"Love you ♾️",
-"Happy Birthday ❤️",
-"- Sri 💖"
+"Installing Love vInfinity ♾️",
+"Happy Birthday Abhi 🎂🔥",
+"- Sri ❤️"
 ];
 
-let i = 0;
-function startChat() {
-  let chat = document.getElementById("chat");
-  function show() {
-    if (i < messages.length) {
-      let div = document.createElement("div");
-      div.className = "msg me";
-      div.innerText = messages[i];
+let i=0;
+
+function startChat(){
+  let chat=document.getElementById("chat");
+
+  function show(){
+    if(i<msgs.length){
+      let div=document.createElement("div");
+      div.className="msg";
       chat.appendChild(div);
-      chat.scrollTop = chat.scrollHeight;
+      typeText(div,msgs[i]);
+      chat.scrollTop=chat.scrollHeight;
       i++;
-      setTimeout(show, 1000);
+      setTimeout(show,1500);
     }
   }
   show();
 }
 
-// Fireworks
-const canvas = document.getElementById("canvas");
-const ctx = canvas.getContext("2d");
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-
-let particles = [];
-
-function createFirework(x,y){
-  for(let i=0;i<60;i++){
-    particles.push({
-      x,y,
-      dx:(Math.random()-0.5)*6,
-      dy:(Math.random()-0.5)*6,
-      life:100
-    });
+// typing effect
+function typeText(el,text){
+  let j=0;
+  function type(){
+    if(j<text.length){
+      el.innerHTML+=text[j];
+      j++;
+      setTimeout(type,40);
+    }
   }
+  type();
 }
-
-setInterval(()=>{
-  createFirework(Math.random()*canvas.width, Math.random()*canvas.height/2);
-},1500);
-
-canvas.addEventListener("click",(e)=>{
-  createFirework(e.clientX,e.clientY);
-});
-
-function draw(){
-  ctx.fillStyle="rgba(0,0,0,0.2)";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  particles.forEach((p,i)=>{
-    ctx.fillStyle=`hsl(${Math.random()*360},100%,50%)`;
-    ctx.fillRect(p.x,p.y,3,3);
-    p.x+=p.dx; p.y+=p.dy; p.life--;
-    if(p.life<=0) particles.splice(i,1);
-  });
-
-  requestAnimationFrame(draw);
-}
-draw();
 
 // Hearts
-function startHearts(){
+function hearts(){
   setInterval(()=>{
     let h=document.createElement("div");
     h.className="heart";
@@ -151,8 +187,87 @@ function startHearts(){
     h.innerText="❤️";
     document.body.appendChild(h);
     setTimeout(()=>h.remove(),5000);
-  },300);
+  },200);
 }
+
+// Finale
+function finale(){
+  document.getElementById("final").style.display="flex";
+}
+
+// Fireworks + ABHI text burst
+const canvas=document.getElementById("canvas");
+const ctx=canvas.getContext("2d");
+canvas.width=window.innerWidth;
+canvas.height=window.innerHeight;
+
+let particles=[];
+
+function fire(x,y,text=false){
+  if(text){
+    let word="ABHI";
+    for(let i=0;i<word.length;i++){
+      particles.push({
+        x:canvas.width/2+i*20,
+        y:canvas.height/3,
+        dx:(Math.random()-0.5)*4,
+        dy:(Math.random()-0.5)*4,
+        life:200,
+        char:word[i]
+      });
+    }
+  } else {
+    for(let i=0;i<80;i++){
+      particles.push({
+        x,y,
+        dx:(Math.random()-0.5)*6,
+        dy:(Math.random()-0.5)*6,
+        life:120
+      });
+    }
+  }
+}
+
+// Auto fireworks
+setInterval(()=>{
+  fire(Math.random()*canvas.width, Math.random()*canvas.height/2);
+},1200);
+
+// ABHI burst every 5 sec
+setInterval(()=>{
+  fire(0,0,true);
+},5000);
+
+// Tap fire
+canvas.addEventListener("click",(e)=>{
+  fire(e.clientX,e.clientY);
+});
+
+// Draw
+function draw(){
+  ctx.fillStyle="rgba(0,0,0,0.2)";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  particles.forEach((p,i)=>{
+    ctx.fillStyle=`hsl(${Math.random()*360},100%,60%)`;
+
+    if(p.char){
+      ctx.font="20px monospace";
+      ctx.fillText(p.char,p.x,p.y);
+    } else {
+      ctx.fillRect(p.x,p.y,3,3);
+    }
+
+    p.x+=p.dx;
+    p.y+=p.dy;
+    p.life--;
+
+    if(p.life<=0) particles.splice(i,1);
+  });
+
+  requestAnimationFrame(draw);
+}
+draw();
 </script>
 
 </body>
